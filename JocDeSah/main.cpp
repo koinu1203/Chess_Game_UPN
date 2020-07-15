@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+//traducido
 
 #define LONGITUD 8
 #define PEON_NEGRO 1
