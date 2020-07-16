@@ -151,80 +151,87 @@ int main()
 					{
 						dx = pos.x - x * 100;
 						dy = pos.y - y * 100;
-						if (tablero[y][x] == PEON_NEGRO && turno==1)//si la pieza es el peon negro 
-						{
-							numPiezaReclamada = PEON_NEGRO;
-							sReclamo = sPeonNegro;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == PEON_BLANCO && turno==0)
-						{
-							numPiezaReclamada = PEON_BLANCO;
-							sReclamo = sPeonBlanco;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == TORRE_NEGRA && turno ==1)
-						{
-							numPiezaReclamada = TORRE_NEGRA;
-							sReclamo = sTorreNegra;
-							tablero[y][x] = 0;
+						//turno de blancas
+						if (turno == 0) { 
+							if (tablero[y][x] == PEON_BLANCO)
+							{
+								numPiezaReclamada = PEON_BLANCO;
+								sReclamo = sPeonBlanco;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == TORRE_BLANCA)
+							{
+								numPiezaReclamada = TORRE_BLANCA;
+								sReclamo = sTorreBlanca;
+								tablero[y][x] = 0;
 
+							}
+							if (tablero[y][x] == CABALLO_BLANCO)
+							{
+								numPiezaReclamada = CABALLO_BLANCO;
+								sReclamo = sCaballoBlanco;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == ALFIL_BLANCO)
+							{
+								numPiezaReclamada = ALFIL_BLANCO;
+								sReclamo = sAlfilBlanco;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REINA_BLANCA)
+							{
+								numPiezaReclamada = REINA_BLANCA;
+								sReclamo = sReinaBlanca;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REY_BLANCO)
+							{
+								numPiezaReclamada = REY_BLANCO;
+								sReclamo = sReyBlanco;
+								tablero[y][x] = 0;
+							}
 						}
-						if (tablero[y][x] == TORRE_BLANCA && turno ==0)
-						{
-							numPiezaReclamada = TORRE_BLANCA;
-							sReclamo = sTorreBlanca;
-							tablero[y][x] = 0;
+						//turno de negras
+						if (turno == 1) {  
+							if (tablero[y][x] == PEON_NEGRO)
+							{
+								numPiezaReclamada = PEON_NEGRO;
+								sReclamo = sPeonNegro;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == TORRE_NEGRA)
+							{
+								numPiezaReclamada = TORRE_NEGRA;
+								sReclamo = sTorreNegra;
+								tablero[y][x] = 0;
 
+							}
+							if (tablero[y][x] == CABALLO_NEGRO)
+							{
+								numPiezaReclamada = CABALLO_NEGRO;
+								sReclamo = sCaballoNegro;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == ALFIL_NEGRO)
+							{
+								numPiezaReclamada = ALFIL_NEGRO;
+								sReclamo = sAlfilNegro;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REINA_NEGRA)
+							{
+								numPiezaReclamada = REINA_NEGRA;
+								sReclamo = sReinaNegra;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REY_NEGRO)
+							{
+								numPiezaReclamada = REY_NEGRO;
+								sReclamo = sReyNegro;
+								tablero[y][x] = 0;
+							}
 						}
-						if (tablero[y][x] == CABALLO_BLANCO && turno ==0)
-						{
-							numPiezaReclamada = CABALLO_BLANCO;
-							sReclamo = sCaballoBlanco;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == CABALLO_NEGRO && turno ==1)
-						{
-							numPiezaReclamada = CABALLO_NEGRO;
-							sReclamo = sCaballoNegro;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == ALFIL_NEGRO && turno ==1)
-						{
-							numPiezaReclamada = ALFIL_NEGRO;
-							sReclamo = sAlfilNegro;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == ALFIL_BLANCO && turno ==0)
-						{
-							numPiezaReclamada = ALFIL_BLANCO;
-							sReclamo = sAlfilBlanco;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == REINA_BLANCA && turno==0)
-						{
-							numPiezaReclamada = REINA_BLANCA;
-							sReclamo = sReinaBlanca;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == REINA_NEGRA && turno ==1)
-						{
-							numPiezaReclamada = REINA_NEGRA;
-							sReclamo = sReinaNegra;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == REY_NEGRO && turno==1)
-						{
-							numPiezaReclamada = REY_NEGRO;
-							sReclamo = sReyNegro;
-							tablero[y][x] = 0;
-						}
-						if (tablero[y][x] == REY_BLANCO && turno==0)
-						{
-							numPiezaReclamada = REY_BLANCO;
-							sReclamo = sReyBlanco;
-							tablero[y][x] = 0;
-						}
+
 						if (tablero[y][x] == 0)
 						{
 							movimientos = 1;
@@ -522,7 +529,7 @@ int main()
 				}
 			}
 		}
-		ventana.display();
+		ventana.display(); //mostrar ventana
 	}
 		return 0;
 }
