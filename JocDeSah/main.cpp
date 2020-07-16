@@ -1,6 +1,10 @@
 #include <iostream>
 #include "Chess.h" //libreria donde están todas las funciones 
 
+//las variables empiezan en 'i' para identificar que es el entero, ya que hay 
+//otra variable con el mismo nombre pero de tipo 'pos'.
+int iTransformBlanco = 0, iTransformNegro = 0;
+
 int main()
 {
 	RenderWindow ventana(VideoMode(800, 800), "Proyect Glagos (UpN cHeSs GaMe)");

@@ -23,6 +23,7 @@
     <ProjectGuid>{1DD25936-0EC4-4307-AC14-7D88F536BD27}</ProjectGuid>
     <RootNamespace>JocDeSah</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ProyectGlados</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

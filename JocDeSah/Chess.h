@@ -42,9 +42,7 @@ int turno = 0; // 0 turno de blancas, 1 turno de negras.
 //para saber si los reyes de estos está en jaque
 int jackeBlanco = 0, jackeNegro = 0;
 
-//las variables empiezan en 'i' para identificar que es el entero, ya que hay 
-//otra variable con el mismo nombre pero de tipo 'pos'.
-int iTransformBlanco = 0, iTransformNegro = 0;
+
 
 
 int movPeonBlanco(int prevX, int prevY, int nuevoX, int nuevoY)
