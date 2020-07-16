@@ -3,7 +3,11 @@
 
 int main()
 {
-	RenderWindow ventana(VideoMode(800, 800), "Chess made by Faraón Love Shaddy");
+	RenderWindow ventana(VideoMode(800, 800), "Proyect Glagos (UpN cHeSs GaMe)");
+	Image icon;
+	icon.loadFromFile("images/icon.png"); //cargar un icono a la ventana
+	Vector2u iconSize = icon.getSize();
+	ventana.setIcon(iconSize.x, iconSize.y,icon.getPixelsPtr()); //cambiar icono de la ventana
 	Texture t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15;
 
 	t1.loadFromFile("images/tablero.png");
@@ -47,23 +51,23 @@ int main()
 		Vector2i pos = Mouse::getPosition(ventana);
 		 x = pos.x / tamanio;
 		 y = pos.y / tamanio;
-		Event e;
-		while (ventana.pollEvent(e))
+		Event e; //evento dentro de la ventana
+		while (ventana.pollEvent(e)) //pila de eventros 
 		{
-			if (e.type == Event::Closed)
+			if (e.type == Event::Closed) //si el eventro es de tipo closed cerramos la ventana 
 			{
 				ventana.close();
 			}
 			ventana.clear();
 			if (e.type == Event::MouseButtonPressed)
 			{
-				if (e.key.code == Mouse::Left)
+				if (e.key.code == Mouse::Left) //si el boton izquierdo del mouse es presionado
 				{
 					//std::cout << "x=" << x << " y=" << y << "\n";
 					//std::cout << "pos_x=" << pos.x << " pos_y=" << pos.y << "\n";
 					//std::cout << "board[y][x]=" << board[y][x] << "\n";
 					//std::cout << "\n";
-					if (iTransformBlanco == 1)
+					if (iTransformBlanco == 1) 
 					{
 						if (pos.y >= transformBlanco.y * tamanio && pos.y <= (transformBlanco.y + 1) * tamanio && pos.x >= transformBlanco.x * tamanio && pos.x <= (transformBlanco.x + 1) * tamanio)
 						{
@@ -101,7 +105,7 @@ int main()
 							}
 						}
 					}
-					if (iTransformNegro == 1)
+					if (iTransformNegro == 1) 
 					{
 						if (pos.y >= transformNegro.y * tamanio && pos.y <= (transformNegro.y + 1) * tamanio && pos.x >= transformNegro.x * tamanio && pos.x <= (transformNegro.x + 1) * tamanio)
 						{
@@ -139,11 +143,11 @@ int main()
 							}
 						}
 					}
-					if (tablero[y][x] != 0)
+					if (tablero[y][x] != 0) //si el espacion en el tablero contiene una pieza | turno 1=negro, 0=blanco 
 					{
 						dx = pos.x - x * 100;
 						dy = pos.y - y * 100;
-						if (tablero[y][x] == PEON_NEGRO && turno==1)
+						if (tablero[y][x] == PEON_NEGRO && turno==1)//si la pieza es el peon negro 
 						{
 							numPiezaReclamada = PEON_NEGRO;
 							sReclamo = sPeonNegro;
