@@ -2,7 +2,7 @@
 #include "IA.h" //libreria donde están todas las funciones 
 
 //las variables empiezan en 'i' para identificar que es el entero, ya que hay 
-//otra variable con el mismo nombre pero de tipo 'pos'.
+//otra variable con el mismo nombre pero de tipo 'pos'. 
 int iTransformBlanco = 0, iTransformNegro = 0;
 
 int main()
