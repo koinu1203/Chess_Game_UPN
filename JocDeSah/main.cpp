@@ -1,2069 +1,539 @@
-#include <SFML/Graphics.hpp>
 #include <iostream>
+#include "IA.h" //libreria donde están todas las funciones 
 
-
-#define LUNGIME 8
-#define PionNEGRU 1
-#define PionALB -1
-#define TurnNEGRU 2
-#define TurnALB -2
-#define CalALB -3
-#define CalNEGRU 3
-#define NebunNEGRU 4
-#define NebunALB -4
-#define ReginaALB -5
-#define ReginaNEGRU 5
-#define RegeNEGRU 6
-#define RegeALB -6
-
-using namespace sf;
-
-struct poz
-{
-	int x, y;
-}oldPoz, regeleAlb, regeleNegru, transformA, transformN;
-
-int  size = 100, move = 0, x, y;
-int board[8][8] =
-{ 2, 3, 4, 5, 6, 4, 3, 2,
-  1, 1, 1, 1, 1, 1, 1, 1,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
- -1,-1,-1,-1,-1,-1,-1,-1,
- -2,-3,-4,-5,-6,-4,-3,-2,};
-
-int turnAlbDreapta = 0, turnAlbStanga = 0, regeAlb = 0;
-int turnNegruDreapta = 0, turnNegruStanga = 0, regeNegru = 0;
-
-int mutare = 0; // 0 muta albul, 1 muta negru
-
-int sahAlb = 0, sahNegru = 0;
-
-int transformareAlb = 0, transformareNegru = 0;
-
-
-int PionA(int ox, int oy, int nx, int ny)
-{
-	if (oldPoz.y == 6)
-	{
-		if ((ny == oy - 1 && nx == ox && board[oy-1][ox]==0)||(ny==oy-2 && nx==ox && board[oy - 1][ox] == 0 && board[oy - 2][ox]==0))
-		{
-			return 1;
-		}
-	}
-	else if(ny == oy - 1 && nx == ox && board[oy - 1][ox] == 0)
-	{
-		return 1;
-	}
-	if (board[oy - 1][ox - 1] > 0)
-	{
-		if (ny == oy - 1 && nx == ox - 1)
-		{
-			return 1;
-		}
-	}
-	if (board[oy - 1][ox + 1] > 0)
-	{
-		if (ny == oy - 1 && nx == ox + 1)
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int PionN(int ox, int oy, int nx, int ny)
-{
-	if (oldPoz.y == 1)
-	{
-		if ((ny == oy + 1 && nx == ox && board[oy+1][ox]==0) || (ny == oy + 2 && nx == ox && board[oy + 1][ox] == 0 && board[oy + 2][ox] == 0))
-		{
-			return 1;
-		}
-	}
-	else if (ny == oy + 1 && nx == ox && board[oy + 1][ox] == 0)
-	{
-		return 1;
-	}
-	if (board[oy + 1][ox - 1] < 0)
-	{
-		if (ny == oy + 1 && nx == ox - 1)
-		{
-			return 1;
-		}
-	}
-	if (board[oy + 1][ox + 1] < 0)
-	{
-		if (ny == oy + 1 && nx == ox + 1)
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int TurnA(int ox, int oy, int nx, int ny)
-{
-	for (int i = ox-1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] >= 0 && (nx == i && ny == oy))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] >= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0 )
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i <= 7; i++) // spre dreapta
-	{
-		if (board[oy][i]>=0 && (ny == oy && nx == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i <= 7; i++) // jos
-	{
-		if (board[i][ox]>=0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	return 0;
-}
-
-int TurnN(int ox, int oy, int nx, int ny)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] <= 0 && (nx == i && ny == oy))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] <= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i <= 7; i++) // spre dreapta
-	{
-		if (board[oy][i] <= 0 && (ny == oy && nx == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i <= 7; i++) // jos
-	{
-		if (board[i][ox] <= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	return 0;
-}
-
-int NebunA(int ox, int oy, int nx, int ny)
-{
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i <= 7; i++)  // spre dreapta jos
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int NebunN(int ox, int oy, int nx, int ny)
-{
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i <= 7; i++)  // spre dreapta jos
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int ReginaA(int ox, int oy, int nx, int ny)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] >= 0 && (nx == i && ny == oy))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] >= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i <= 7; i++) // spre dreapta
-	{
-		if (board[oy][i] >= 0 && (ny == oy && nx == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i <= 7; i++) // jos
-	{
-		if (board[i][ox] >= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i <= 7; i++)  // spre dreapta jos
-	{
-		if (board[i][j] >= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int ReginaN(int ox, int oy, int nx, int ny)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] <= 0 && (nx == i && ny == oy))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] <= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i <= 7; i++) // spre dreapta
-	{
-		if (board[oy][i] <= 0 && (ny == oy && nx == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i <= 7; i++) // jos
-	{
-		if (board[i][ox] <= 0 && (ny == i && nx == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i <= 7; i++)  // spre dreapta jos
-	{
-		if (board[i][j] <= 0 && (ny == i && nx == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int CalA(int ox, int oy, int nx, int ny)
-{
-	if (oy - 2 >= 0 && ox - 1 >= 0 && ny == oy - 2 && nx == ox - 1 && board[ny][nx] >= 0)
-	{
-		return 1; // stanga sus
-	}
-	if (oy - 2 >= 0 && ox + 1 <LUNGIME && ny == oy - 2 && nx == ox + 1 && board[ny][nx] >= 0)
-	{
-		return 1; // dreapta sus
-	}
-	if (oy - 1 >= 0 && ox + 2 < LUNGIME && ny==oy-1 && nx==ox+2 && board[ny][nx]>=0)
-	{
-		return 1; // dreapta 1
-	}
-	if (oy + 1 >= 0 && ox + 2 < LUNGIME && ny == oy + 1 && nx == ox + 2 && board[ny][nx] >= 0)
-	{
-		return 1; // dreapta 2
-	}
-	if (oy+2<LUNGIME && ox+1<LUNGIME && ny==oy+2 && nx==ox+1 && board[ny][nx]>=0)
-	{
-		return 1; // jos 1
-	}
-	if (oy + 2 < LUNGIME && ox - 1 >= 0 && ny == oy + 2 && nx == ox - 1 && board[ny][nx] >= 0)
-	{
-		return 1; //jos 2
-	}
-	if (oy+1<LUNGIME && ox-2>=0 && ny==oy+1 && nx==ox-2 && board[ny][nx]>=0 )
-	{
-		return 1; // stanga 1
-	}
-	if (oy - 1 >= 0 && ox - 2 >= 0 && ny == oy - 1 && nx == ox - 2 && board[ny][nx] >= 0)
-	{
-		return 1;
-	}
-	return 0;
-}
-
-int CalN(int ox, int oy, int nx, int ny)
-{
-	if (oy - 2 >= 0 && ox - 1 >= 0 && ny == oy - 2 && nx == ox - 1 && board[ny][nx] <= 0)
-	{
-		return 1; // stanga sus
-	}
-	if (oy - 2 >= 0 && ox + 1 < LUNGIME && ny == oy - 2 && nx == ox + 1 && board[ny][nx] <= 0)
-	{
-		return 1; // dreapta sus
-	}
-	if (oy - 1 >= 0 && ox + 2 < LUNGIME && ny == oy - 1 && nx == ox + 2 && board[ny][nx] <= 0)
-	{
-		return 1; // dreapta 1
-	}
-	if (oy + 1 >= 0 && ox + 2 < LUNGIME && ny == oy + 1 && nx == ox + 2 && board[ny][nx] <= 0)
-	{
-		return 1; // dreapta 2
-	}
-	if (oy + 2 < LUNGIME && ox + 1 < LUNGIME && ny == oy + 2 && nx == ox + 1 && board[ny][nx] <= 0)
-	{
-		return 1; // jos 1
-	}
-	if (oy + 2 < LUNGIME && ox - 1 >= 0 && ny == oy + 2 && nx == ox - 1 && board[ny][nx] <= 0)
-	{
-		return 1; //jos 2
-	}
-	if (oy + 1 < LUNGIME && ox - 2 >= 0 && ny == oy + 1 && nx == ox - 2 && board[ny][nx] <= 0)
-	{
-		return 1; // stanga 1
-	}
-	if (oy - 1 >= 0 && ox - 2 >= 0 && ny == oy - 1 && nx == ox - 2 && board[ny][nx] <= 0)
-	{
-		return 1;
-	}
-	return 0;
-}
-
-
-int PionASah(int posx, int posy, int regex, int regey)
-{
-	//std::cout << "ox=" << posx << " oy=" << posy << " regex=" << regex << " regey=" << regey << "\n\n\n";
-	if (board[posy - 1][posx - 1] >= 0)
-	{
-		if (posy-1 == regey && posx - 1 == regex)
-		{
-			return 1;
-		}
-	}
-	if (board[posy - 1][posx + 1] >= 0)
-	{
-		//std::cout << "da";
-		if (posy - 1 == regey && posx + 1==regex)
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int TurnASah(int ox, int oy, int regex, int regey)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] >= 0 && (regex== i && regey == oy))
-		{
-			return 1;
-		}
-		else if(board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] >= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if(board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i < LUNGIME; i++) // spre dreapta
-	{
-		if (board[oy][i] >= 0 && (regey == oy && regex == i))
-		{
-			return 1;
-		}
-		else if(board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i <LUNGIME; i++) // jos
-	{
-		if (board[i][ox] >= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if(board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	return 0;
-}
-
-int NebunASah(int ox, int oy, int regex, int regey)
-{
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if(board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if(board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i <= 7; i++)  // spre dreapta jos
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int ReginaASah(int ox, int oy, int regex, int regey)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] >= 0 && (regex == i && regey == oy))
-		{
-			return 1;
-		}
-		else if(board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] >= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if(board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i < LUNGIME; i++) // spre dreapta
-	{
-		if (board[oy][i] >= 0 && (regey == oy && regex == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i <LUNGIME; i++) // jos
-	{
-		if (board[i][ox] >= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if(board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if(board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if(board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i < LUNGIME; i++)  // spre dreapta jos
-	{
-		if (board[i][j] >= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if(board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int CalASah(int ox, int oy, int regex, int regey)
-{
-	if (oy - 2 >= 0 && ox - 1 >= 0 && regey == oy - 2 && regex == ox - 1 && board[regey][regex] >= 0)
-	{
-		return 1; // stanga sus
-	}
-	if (oy - 2 >= 0 && ox + 1 < LUNGIME && regey == oy - 2 && regex == ox + 1 && board[regey][regex] >= 0)
-	{
-		return 1; // dreapta sus
-	}
-	if (oy - 1 >= 0 && ox + 2 < LUNGIME && regey == oy - 1 && regex == ox + 2 && board[regey][regex] >= 0)
-	{
-		return 1; // dreapta 1
-	}
-	if (oy + 1 >= 0 && ox + 2 < LUNGIME && regey == oy + 1 && regex == ox + 2 && board[regey][regex] >= 0)
-	{
-		return 1; // dreapta 2
-	}
-	if (oy + 2 < LUNGIME && ox + 1 < LUNGIME && regey == oy + 2 && regex == ox + 1 && board[regey][regex] >= 0)
-	{
-		return 1; // jos 1
-	}
-	if (oy + 2 < LUNGIME && ox - 1 >= 0 && regey == oy + 2 && regex == ox - 1 && board[regey][regex] >= 0)
-	{
-		return 1; //jos 2
-	}
-	if (oy + 1 < LUNGIME && ox - 2 >= 0 && regey == oy + 1 && regex == ox - 2 && board[regey][regex] >= 0)
-	{
-		return 1; // stanga 1
-	}
-	if (oy - 1 >= 0 && ox - 2 >= 0 && regey == oy - 1 && regex == ox - 2 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	return 0;
-}
-
-int RegeASah(int ox, int oy, int regex, int regey)
-{
-	if (ox - 1 >= 0 && oy - 1 >= 0 && regey == oy - 1 && regex == ox - 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (oy - 1 >= 0 && regex == ox && regey == oy - 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (oy - 1 >= 0 && ox + 1 < LUNGIME && regex == ox + 1 && regey == oy - 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (ox + 1 < LUNGIME && regey == oy && regex == ox + 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (ox + 1 < LUNGIME && oy + 1 < LUNGIME && regey == oy + 1 && regex == ox + 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (oy + 1 < LUNGIME && regey == oy + 1 && regex == ox && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (ox - 1 >= 0 && oy + 1 < LUNGIME && regex == ox - 1 && regey == oy + 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	if (ox - 1 >= 0 && regey == oy && regex == ox - 1 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	return 0;
-}
-
-
-int PionNSah(int ox, int oy, int regex, int regey)
-{
-	if (board[oy + 1][ox - 1] <= 0)
-	{
-		if (regey == oy + 1 && regex == ox - 1)
-		{
-			return 1;
-		}
-	}
-	if (board[oy + 1][ox + 1] <= 0)
-	{
-		if (regey == oy + 1 && regex == ox + 1)
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int TurnNSah(int ox, int oy, int regex, int regey)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] <= 0 && (regex == i && regey == oy))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] <= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i < LUNGIME; i++) // spre dreapta
-	{
-		if (board[oy][i] <= 0 && (regey == oy && regex == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i < LUNGIME; i++) // jos
-	{
-		if (board[i][ox] <= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	return 0;
-}
-
-int NebunNSah(int ox, int oy, int regex, int regey)
-{
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i <= 7; i++)  // spre dreapta jos
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int ReginaNSah(int ox, int oy, int regex, int regey)
-{
-	for (int i = ox - 1; i >= 0; i--) // spre stanga
-	{
-		if (board[oy][i] <= 0 && (regex == i && regey == oy))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy - 1; i >= 0; i--) // sus
-	{
-		if (board[i][ox] <= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = ox + 1; i < LUNGIME; i++) // spre dreapta
-	{
-		if (board[oy][i] <= 0 && (regey == oy && regex == i))
-		{
-			return 1;
-		}
-		else if (board[oy][i] != 0)
-		{
-			break;
-		}
-	}
-	for (int i = oy + 1; i < LUNGIME; i++) // jos
-	{
-		if (board[i][ox] <= 0 && (regey == i && regex == ox))
-		{
-			return 1;
-		}
-		else if (board[i][ox] != 0)
-		{
-			break;
-		}
-	}
-	int j = ox - 1;
-	for (int i = oy - 1; i >= 0; i--) // spre stanga sus
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy - 1; i >= 0; i--) // spre dreapta sus
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	j = ox - 1;
-	for (int i = oy + 1; i <= 7; i++) // spre stanga jos
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j--;
-	}
-	j = ox + 1;
-	for (int i = oy + 1; i < LUNGIME; i++)  // spre dreapta jos
-	{
-		if (board[i][j] <= 0 && (regey == i && regex == j))
-		{
-			return 1;
-		}
-		else if (board[i][j] != 0)
-		{
-			break;
-		}
-		j++;
-	}
-	return 0;
-}
-
-int CalNSah(int ox, int oy, int regex, int regey)
-{
-	if (oy - 2 >= 0 && ox - 1 >= 0 && regey == oy - 2 && regex == ox - 1 && board[regey][regex] <= 0)
-	{
-		return 1; // stanga sus
-	}
-	if (oy - 2 >= 0 && ox + 1 < LUNGIME && regey == oy - 2 && regex == ox + 1 && board[regey][regex] <= 0)
-	{
-		return 1; // dreapta sus
-	}
-	if (oy - 1 >= 0 && ox + 2 < LUNGIME && regey == oy - 1 && regex == ox + 2 && board[regey][regex] <= 0)
-	{
-		return 1; // dreapta 1
-	}
-	if (oy + 1 >= 0 && ox + 2 < LUNGIME && regey == oy + 1 && regex == ox + 2 && board[regey][regex] <= 0)
-	{
-		return 1; // dreapta 2
-	}
-	if (oy + 2 < LUNGIME && ox + 1 < LUNGIME && regey == oy + 2 && regex == ox + 1 && board[regey][regex] <= 0)
-	{
-		return 1; // jos 1
-	}
-	if (oy + 2 < LUNGIME && ox - 1 >= 0 && regey == oy + 2 && regex == ox - 1 && board[regey][regex] <= 0)
-	{
-		return 1; //jos 2
-	}
-	if (oy + 1 < LUNGIME && ox - 2 >= 0 && regey == oy + 1 && regex == ox - 2 && board[regey][regex] <= 0)
-	{
-		return 1; // stanga 1
-	}
-	if (oy - 1 >= 0 && ox - 2 >= 0 && regey == oy - 1 && regex == ox - 2 && board[regey][regex] <= 0)
-	{
-		return 1;
-	}
-	return 0;
-}
-
-int RegeNSah(int ox, int oy, int regex, int regey)
-{
-	if (ox - 1 >= 0 && oy - 1 >= 0 && regey == oy - 1 && regex == ox - 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (oy - 1 >= 0 && regex == ox && regey == oy - 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (oy - 1 >= 0 && ox + 1 < LUNGIME && regex == ox + 1 && regey == oy - 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (ox + 1 < LUNGIME && regey == oy && regex == ox + 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (ox + 1 < LUNGIME && oy + 1 < LUNGIME && regey == oy + 1 && regex == ox + 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (oy + 1 < LUNGIME && regey == oy + 1 && regex == ox && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (ox - 1 >= 0 && oy + 1 < LUNGIME && regex == ox - 1 && regey == oy + 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	if (ox - 1 >= 0 && regey == oy && regex == ox - 1 && board[regey][regex] >= 0)
-	{
-		return 1;
-	}
-	return 0;
-}
-
-
-
-int RegeNegruSahCheck(int posRegex, int posRegey)
-{
-	int ok = 0;
-	for (int i = 0; i < LUNGIME; i++)
-	{
-		for (int j = 0; j < LUNGIME; j++)
-		{
-			if (board[i][j] < 0)
-			{
-				if (board[i][j] == PionALB)
-				{
-					ok=PionASah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == TurnALB)
-				{
-					ok=TurnASah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == CalALB)
-				{
-					ok=CalASah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == NebunALB)
-				{
-					ok=NebunASah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == ReginaALB)
-				{
-					ok=ReginaASah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == RegeALB)
-				{
-					ok=RegeASah(j, i, posRegex, posRegey);
-				}
-				if (ok == 1)
-				{
-					return 0;
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-int RegeN(int ox, int oy, int nx, int ny)
-{
-	if (ox - 1 >= 0 && oy - 1 >= 0 && ny == oy - 1 && nx == ox - 1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox - 1, oy - 1);
-		if (ok == 1)
-		{
-			return 1;  // stanga sus
-		}
-	}
-	if (oy - 1 >= 0 && nx == ox && ny == oy-1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox, oy-1);
-		if (ok == 1)
-		{
-			return 1; // sus
-		}
-	}
-	if (oy - 1 >= 0 && ox + 1 < LUNGIME && nx == ox + 1 && ny == oy - 1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox+ 1, oy- 1);
-		if (ok == 1)
-		{
-			return 1; // dreapta sus
-		}
-	}
-	if (ox + 1 < LUNGIME && ny == oy && nx == ox+1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox+1, oy);
-		if (ok == 1)
-		{
-			return 1; // dreapta
-		}
-	}
-	if (ox + 1 < LUNGIME && oy + 1 < LUNGIME && ny == oy + 1 && nx == ox + 1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox + 1, oy + 1);
-		if (ok == 1)
-		{
-			return 1; // dreapta jos
-		}
-	}
-	if (oy + 1 < LUNGIME && ny == oy+1 && nx == ox && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox, oy+1);
-		if (ok == 1)
-		{
-			return 1; // jos
-		}
-	}
-	if (ox - 1 >=0 && oy + 1 <LUNGIME && nx == ox - 1 && ny == oy + 1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox-1, oy+ 1);
-		if (ok == 1)
-		{
-			return 1; // stanga jos
-		}
-	}
-	if (ox - 1 >= 0 && ny == oy && nx == ox-1 && board[ny][nx] <= 0)
-	{
-		int ok = RegeNegruSahCheck(ox-1, oy);
-		if (ok == 1)
-		{
-			return 1; // stanga
-		}
-	}
-	// rocada in dreapta
-	if (turnNegruDreapta==0 && regeNegru==0 && board[0][5]==0 && board[0][6]==0 && ny==0 && nx==6)
-	{
-		int ok = RegeNegruSahCheck(4, 0);
-		if (ok == 1)
-		{
-			ok = RegeNegruSahCheck(5, 0);
-			if (ok == 1)
-			{
-				ok = RegeNegruSahCheck(6, 0);
-				if (ok == 1)
-				{
-					regeNegru = 1;
-					turnNegruDreapta = 1;
-					board[0][7] = 0;
-					board[0][5] = TurnNEGRU;
-					return 1;
-				}
-			}
-		}
-	}
-	if (turnNegruStanga == 0 && regeNegru == 0 && board[0][3] == 0 && board[0][2] == 0 && board[0][1] == 0 && ny == 0 && nx == 2)
-	{
-		int ok = RegeNegruSahCheck(4, 0);
-		if (ok == 1)
-		{
-			ok = RegeNegruSahCheck(3, 0);
-			if (ok == 1)
-			{
-				ok = RegeNegruSahCheck(2, 0);
-				if (ok == 1)
-				{
-					ok = RegeNegruSahCheck(1, 0);
-					if (ok == 1)
-					{
-						regeNegru = 1;
-						turnNegruStanga = 1;
-						board[0][0] = 0;
-						board[0][3] = TurnNEGRU;
-						return 1;
-					}
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-
-int RegeAlbSahCheck(int posRegex, int posRegey)
-{
-	int ok = 0;
-	for (int i = 0; i < LUNGIME; i++)
-	{
-		for (int j = 0; j < LUNGIME; j++)
-		{
-			if (board[i][j] > 0)
-			{
-				if (board[i][j] == PionNEGRU)
-				{
-					ok = PionNSah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == TurnNEGRU)
-				{
-					ok = TurnNSah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == CalNEGRU)
-				{
-					ok = CalNSah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == NebunNEGRU)
-				{
-					ok = NebunNSah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == ReginaNEGRU)
-				{
-					ok = ReginaNSah(j, i, posRegex, posRegey);
-				}
-				if (board[i][j] == RegeNEGRU)
-				{
-					ok=RegeNSah(j, i, posRegex, posRegey);
-				}
-				if (ok == 1)
-				{
-					//	std::cout << "da" << "\n";
-					return 0;
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-int RegeA(int ox, int oy, int nx, int ny)
-{
-	if (ox - 1 >= 0 && oy - 1 >= 0 && ny == oy - 1 && nx == ox - 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox - 1, oy - 1);
-		if (ok == 1)
-		{
-			return 1;  // stanga sus
-		}
-	}
-	if (oy - 1 >= 0 && nx == ox && ny == oy - 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox, oy - 1);
-		if (ok == 1)
-		{
-			return 1; // sus
-		}
-	}
-	if (oy - 1 >= 0 && ox + 1 < LUNGIME && nx == ox + 1 && ny == oy - 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox + 1, oy - 1);
-		if (ok == 1)
-		{
-			return 1; // dreapta sus
-		}
-	}
-	if (ox + 1 < LUNGIME && ny == oy && nx == ox + 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox + 1, oy);
-		if (ok == 1)
-		{
-			return 1; // dreapta
-		}
-	}
-	if (ox + 1 < LUNGIME && oy + 1 < LUNGIME && ny == oy + 1 && nx == ox + 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox + 1, oy + 1);
-		if (ok == 1)
-		{
-			return 1; // dreapta jos
-		}
-	}
-	if (oy + 1 < LUNGIME && ny == oy + 1 && nx == ox && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox, oy + 1);
-		if (ok == 1)
-		{
-			return 1; // jos
-		}
-	}
-	if (ox - 1 >= 0 && oy + 1 < LUNGIME && nx == ox - 1 && ny == oy + 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox - 1, oy + 1);
-		if (ok == 1)
-		{
-			return 1; // stanga jos
-		}
-	}
-	if (ox - 1 >= 0 && ny == oy && nx == ox - 1 && board[ny][nx] >= 0)
-	{
-		int ok = RegeAlbSahCheck(ox - 1, oy);
-		if (ok == 1)
-		{
-			return 1; // stanga
-		}
-	}
-	// rocada in dreapta
-	if (regeAlb == 0 && turnAlbDreapta == 0 && board[7][5] == 0 && board[7][6] == 0 && ny==7 && nx==6)
-	{
-		int ok = 1;
-		ok = RegeAlbSahCheck(4, 7);
-		if (ok == 1)
-		{
-			ok = RegeAlbSahCheck(5, 7);
-			if (ok == 1)
-			{
-				ok = RegeAlbSahCheck(6, 7);
-				if (ok == 1)
-				{
-					board[7][7] = 0;
-					board[7][5] = TurnALB;
-					regeAlb = 1;
-					turnAlbDreapta = 1;
-					return 1;
-				}
-			}
-		}
-	}
-	// rocada in stanga
-	if (regeAlb == 0 && turnAlbDreapta == 0 && board[7][3] == 0 && board[7][2] == 0 && board[7][1] == 0 && ny == 7 && nx == 2)
-	{
-		int ok = 1;
-		ok = RegeAlbSahCheck(4, 7);
-		if (ok == 1)
-		{
-			ok = RegeAlbSahCheck(3, 7);
-			if (ok == 1)
-			{
-				ok = RegeAlbSahCheck(2, 7);
-				if (ok == 1)
-				{
-					ok = RegeAlbSahCheck(1, 7);
-					if (ok == 1)
-					{
-						board[7][0] = 0;
-						board[7][3] = TurnALB;
-						regeAlb = 1;
-						turnAlbStanga = 1;
-						return 1;
-					}
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-
-void pozRegeAlb()
-{
-	for (int i = 0; i < LUNGIME; i++)
-	{
-		for (int j = 0; j < LUNGIME; j++)
-		{
-			if (board[i][j] == RegeALB)
-			{
-				regeleAlb.x = j;
-				regeleAlb.y = i;
-				break;
-			}
-		}
-	}
-}
-
-void pozRegeNegru()
-{
-	for (int i = 0; i < LUNGIME; i++)
-	{
-		for (int j = 0; j < LUNGIME; j++)
-		{
-			if (board[i][j] == RegeNEGRU)
-			{
-				regeleNegru.y = i;
-				regeleNegru.x = j;
-				break;
-			}
-		}
-	}
-}
+//las variables empiezan en 'i' para identificar que es el entero, ya que hay 
+//otra variable con el mismo nombre pero de tipo 'pos'.
+int iTransformBlanco = 0, iTransformNegro = 0;
 
 int main()
 {
-	RenderWindow window(VideoMode(800, 800), "Chess made by Silvian Achim");
+	RenderWindow ventana(VideoMode(800, 800), "Proyect Glagos (UpN cHeSs GaMe)");
+	Image icon;
+	icon.loadFromFile("images/icon.png"); //cargar un icono a la ventana
+	Vector2u iconSize = icon.getSize();
+	ventana.setIcon(iconSize.x, iconSize.y,icon.getPixelsPtr()); //cambiar icono de la ventana
 	Texture t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15;
 
-	t1.loadFromFile("images/board.png");
-	t2.loadFromFile("images/PionNegru.png");
-	t3.loadFromFile("images/PionAlb.png");
-	t4.loadFromFile("images/TurnNegru.png");
-	t5.loadFromFile("images/TurnAlb.png");
-	t6.loadFromFile("images/CalAlb.png");
-	t7.loadFromFile("images/CalNegru.png");
-	t8.loadFromFile("images/NebunNegru.png");
-	t9.loadFromFile("images/NebunAlb.png");
-	t10.loadFromFile("images/ReginaAlb.png");
-	t11.loadFromFile("images/ReginaNegru.png");
-	t12.loadFromFile("images/RegeNegru.png");
-	t13.loadFromFile("images/RegeAlb.png");
-	t14.loadFromFile("images/TransformareAlb.png");
-	t15.loadFromFile("images/TransformareNegru.png");
+	t1.loadFromFile("images/tablero.png");
+	t2.loadFromFile("images/peon_n.png");
+	t3.loadFromFile("images/peon_b.png");
+	t4.loadFromFile("images/torre_n.png");
+	t5.loadFromFile("images/torre_b.png");
+	t6.loadFromFile("images/cab_b.png");
+	t7.loadFromFile("images/cab_n.png");
+	t8.loadFromFile("images/alfil_n.png");
+	t9.loadFromFile("images/alfil_b.png");
+	t10.loadFromFile("images/reina_b.png");
+	t11.loadFromFile("images/reina_n.png");
+	t12.loadFromFile("images/rey_n.png");
+	t13.loadFromFile("images/rey_b.png");
+	t14.loadFromFile("images/reclamar_pieza_b.png");
+	t15.loadFromFile("images/reclamar_pieza_n.png");
 
-	Sprite tabla(t1);
-	Sprite PionNegru(t2);
-	Sprite PionAlb(t3);
-	Sprite TurnNegru(t4);
-	Sprite TurnAlb(t5);
-	Sprite CalAlb(t6);
-	Sprite CalNegru(t7);
-	Sprite NebunNegru(t8);
-	Sprite NebunAlb(t9);
-	Sprite ReginaAlb(t10);
-	Sprite ReginaNegru(t11);
-	Sprite RegeNegru(t12);
-	Sprite RegeAlb(t13);
-	Sprite Mutare;
-	Sprite TransformareALB(t14);
-	Sprite TransformareNEGRU(t15);
+	Sprite sTabla(t1);
+	Sprite sPeonNegro(t2);
+	Sprite sPeonBlanco(t3);
+	Sprite sTorreNegra(t4);
+	Sprite sTorreBlanca(t5);
+	Sprite sCaballoBlanco(t6);
+	Sprite sCaballoNegro(t7);
+	Sprite sAlfilNegro(t8);
+	Sprite sAlfilBlanco(t9);
+	Sprite sReinaBlanca(t10);
+	Sprite sReinaNegra(t11);
+	Sprite sReyNegro(t12);
+	Sprite sReyBlanco(t13);
+	Sprite sReclamo;
+	Sprite sOpcionesDeReclamoBlanco(t14);
+	Sprite sOpcionesDeReclamoNegro(t15);
 
 	float dx = 0, dy = 0;
-	int numarPiesaMutata = 0;
+	int numPiezaReclamada = 0;
 
-	while (window.isOpen())
+	while (ventana.isOpen())
 	{
-		Vector2i pos = Mouse::getPosition(window);
-		 x = pos.x / size;
-		 y = pos.y / size;
-		Event e;
-		while (window.pollEvent(e))
+		Vector2i pos = Mouse::getPosition(ventana);
+		 x = pos.x / tamanio;
+		 y = pos.y / tamanio;
+		Event e; //evento dentro de la ventana
+		while (ventana.pollEvent(e)) //pila de eventros 
 		{
-			if (e.type == Event::Closed)
+			if (e.type == Event::Closed) //si el eventro es de tipo closed cerramos la ventana 
 			{
-				window.close();
+				ventana.close();
 			}
-			window.clear();
+			ventana.clear();
+			//si el mouse es presionado
 			if (e.type == Event::MouseButtonPressed)
 			{
-				if (e.key.code == Mouse::Left)
+				//si el boton izquierdo del mouse es presionado
+				if (e.key.code == Mouse::Left) 
 				{
 					//std::cout << "x=" << x << " y=" << y << "\n";
 					//std::cout << "pos_x=" << pos.x << " pos_y=" << pos.y << "\n";
 					//std::cout << "board[y][x]=" << board[y][x] << "\n";
 					//std::cout << "\n";
-					if (transformareAlb == 1)
+					if (iTransformBlanco == 1) 
 					{
-						if (pos.y >= transformA.y * size && pos.y <= (transformA.y + 1) * size && pos.x >= transformA.x * size && pos.x <= (transformA.x + 1) * size)
+						if (pos.y >= transformBlanco.y * tamanio && pos.y <= (transformBlanco.y + 1) * tamanio && pos.x >= transformBlanco.x * tamanio && pos.x <= (transformBlanco.x + 1) * tamanio)
 						{
 							int xx = pos.x % 100, yy = pos.y % 100;
 							//std::cout << "pos.y=" << yy << "\n";
 							//std::cout << "pos.x=" << xx << "\n";
 							if (xx < 50 && yy < 50 && xx > 0 && yy > 0)
 							{
-								board[transformA.y][transformA.x] = TurnALB;
-								transformareAlb = 0;
+								tablero[transformBlanco.y][transformBlanco.x] = TORRE_BLANCA;
+								iTransformBlanco = 0;
 							}
 							if (xx > 50 && xx < 100 && yy < 50 && yy > 0)
 							{
-								board[transformA.y][transformA.x] = ReginaALB;
-								transformareAlb = 0;
+								tablero[transformBlanco.y][transformBlanco.x] = REINA_BLANCA;
+								iTransformBlanco = 0;
 							}
 							if (xx > 50 && xx < 100 && yy>50 && yy < 100)
 							{
-								board[transformA.y][transformA.x] = CalALB;
-								transformareAlb = 0;
+								tablero[transformBlanco.y][transformBlanco.x] = CABALLO_BLANCO;
+								iTransformBlanco = 0;
 							}
 							if (xx < 50 && xx>0 && yy > 50 && y < 100)
 							{
-								board[transformA.y][transformA.x] = NebunALB;
-								transformareAlb = 0;
+								tablero[transformBlanco.y][transformBlanco.x] = ALFIL_BLANCO;
+								iTransformBlanco = 0;
 							}
-							if (transformareAlb == 0)
+							if (iTransformBlanco == 0)
 							{
-								pozRegeNegru();
-								int h = RegeNegruSahCheck(regeleNegru.x, regeleNegru.y);
+								copReyNegro();
+								int h = verifReyNegroJaque(posReyNegro.x, posReyNegro.y);
 								if (h == 0)
 								{
-									sahNegru = 1;
+									jackeNegro = 1;
 								}
 							}
 						}
 					}
-					if (transformareNegru == 1)
+					if (iTransformNegro == 1) 
 					{
-						if (pos.y >= transformN.y * size && pos.y <= (transformN.y + 1) * size && pos.x >= transformN.x * size && pos.x <= (transformN.x + 1) * size)
+						if (pos.y >= transformNegro.y * tamanio && pos.y <= (transformNegro.y + 1) * tamanio && pos.x >= transformNegro.x * tamanio && pos.x <= (transformNegro.x + 1) * tamanio)
 						{
 							int xx = pos.x % 100, yy = pos.y % 100;
 							//std::cout << "pos.y=" << yy << "\n";
 							//std::cout << "pos.x=" << xx << "\n";
 							if (xx < 50 && yy < 50 && xx > 0 && yy > 0)
 							{
-								board[transformN.y][transformN.x] = TurnNEGRU;
-								transformareNegru = 0;
+								tablero[transformNegro.y][transformNegro.x] = TORRE_NEGRA;
+								iTransformNegro = 0;
 							}
 							if (xx > 50 && xx < 100 && yy < 50 && yy > 0)
 							{
-								board[transformN.y][transformN.x] = ReginaNEGRU;
-								transformareNegru = 0;
+								tablero[transformNegro.y][transformNegro.x] = REINA_NEGRA;
+								iTransformNegro = 0;
 							}
 							if (xx > 50 && xx < 100 && yy>50 && yy < 100)
 							{
-								board[transformN.y][transformN.x] = CalNEGRU;
-								transformareNegru = 0;
+								tablero[transformNegro.y][transformNegro.x] = CABALLO_NEGRO;
+								iTransformNegro = 0;
 							}
 							if (xx < 50 && xx>0 && yy > 50 && y < 100)
 							{
-								board[transformN.y][transformN.x] = NebunNEGRU;
-								transformareNegru = 0;
+								tablero[transformNegro.y][transformNegro.x] = ALFIL_NEGRO;
+								iTransformNegro = 0;
 							}
-							if (transformareNegru == 0)
+							if (iTransformNegro == 0)
 							{
-								pozRegeAlb();
-								int h = RegeAlbSahCheck(regeleAlb.x, regeleAlb.y);
+								copPosReyBlanco();
+								int h = verifReyBlancoJaque(posReyBlanco.x, posReyBlanco.y);
 								if (h == 0)
 								{
-									sahAlb = 1;
+									jackeBlanco = 1;
 								}
 							}
 						}
 					}
-					if (board[y][x] != 0)
+					if (tablero[y][x] != 0) //si el espacion en el tablero contiene una pieza | turno 1=negro, 0=blanco 
 					{
 						dx = pos.x - x * 100;
 						dy = pos.y - y * 100;
-						if (board[y][x] == PionNEGRU && mutare==1)
-						{
-							numarPiesaMutata = PionNEGRU;
-							Mutare = PionNegru;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == PionALB && mutare==0)
-						{
-							numarPiesaMutata = PionALB;
-							Mutare = PionAlb;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == TurnNEGRU && mutare ==1)
-						{
-							numarPiesaMutata = TurnNEGRU;
-							Mutare = TurnNegru;
-							board[y][x] = 0;
+						//turno de blancas
+						if (turno == 0) { 
+							if (tablero[y][x] == PEON_BLANCO)
+							{
+								numPiezaReclamada = PEON_BLANCO;
+								sReclamo = sPeonBlanco;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == TORRE_BLANCA)
+							{
+								numPiezaReclamada = TORRE_BLANCA;
+								sReclamo = sTorreBlanca;
+								tablero[y][x] = 0;
 
+							}
+							if (tablero[y][x] == CABALLO_BLANCO)
+							{
+								numPiezaReclamada = CABALLO_BLANCO;
+								sReclamo = sCaballoBlanco;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == ALFIL_BLANCO)
+							{
+								numPiezaReclamada = ALFIL_BLANCO;
+								sReclamo = sAlfilBlanco;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REINA_BLANCA)
+							{
+								numPiezaReclamada = REINA_BLANCA;
+								sReclamo = sReinaBlanca;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REY_BLANCO)
+							{
+								numPiezaReclamada = REY_BLANCO;
+								sReclamo = sReyBlanco;
+								tablero[y][x] = 0;
+							}
 						}
-						if (board[y][x] == TurnALB && mutare ==0)
-						{
-							numarPiesaMutata = TurnALB;
-							Mutare = TurnAlb;
-							board[y][x] = 0;
+						//turno de negras
+						if (turno == 1) {  
+							if (tablero[y][x] == PEON_NEGRO)
+							{
+								numPiezaReclamada = PEON_NEGRO;
+								sReclamo = sPeonNegro;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == TORRE_NEGRA)
+							{
+								numPiezaReclamada = TORRE_NEGRA;
+								sReclamo = sTorreNegra;
+								tablero[y][x] = 0;
 
+							}
+							if (tablero[y][x] == CABALLO_NEGRO)
+							{
+								numPiezaReclamada = CABALLO_NEGRO;
+								sReclamo = sCaballoNegro;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == ALFIL_NEGRO)
+							{
+								numPiezaReclamada = ALFIL_NEGRO;
+								sReclamo = sAlfilNegro;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REINA_NEGRA)
+							{
+								numPiezaReclamada = REINA_NEGRA;
+								sReclamo = sReinaNegra;
+								tablero[y][x] = 0;
+							}
+							if (tablero[y][x] == REY_NEGRO)
+							{
+								numPiezaReclamada = REY_NEGRO;
+								sReclamo = sReyNegro;
+								tablero[y][x] = 0;
+							}
 						}
-						if (board[y][x] == CalALB && mutare ==0)
+
+						if (tablero[y][x] == 0)
 						{
-							numarPiesaMutata = CalALB;
-							Mutare = CalAlb;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == CalNEGRU && mutare ==1)
-						{
-							numarPiesaMutata = CalNEGRU;
-							Mutare = CalNegru;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == NebunNEGRU && mutare ==1)
-						{
-							numarPiesaMutata = NebunNEGRU;
-							Mutare = NebunNegru;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == NebunALB && mutare ==0)
-						{
-							numarPiesaMutata = NebunALB;
-							Mutare = NebunAlb;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == ReginaALB && mutare==0)
-						{
-							numarPiesaMutata = ReginaALB;
-							Mutare = ReginaAlb;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == ReginaNEGRU && mutare ==1)
-						{
-							numarPiesaMutata = ReginaNEGRU;
-							Mutare = ReginaNegru;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == RegeNEGRU && mutare==1)
-						{
-							numarPiesaMutata = RegeNEGRU;
-							Mutare = RegeNegru;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == RegeALB && mutare==0)
-						{
-							numarPiesaMutata = RegeALB;
-							Mutare = RegeAlb;
-							board[y][x] = 0;
-						}
-						if (board[y][x] == 0)
-						{
-							move = 1;
-							oldPoz.x = x;
-							oldPoz.y = y;
+							movimientos = 1;
+							prevPos.x = x;
+							prevPos.y = y;
 						}
 					}
 				}
 			}
+			//si el mouse termina de pulsarse
 			if (e.type == Event::MouseButtonReleased)
 			{
+				//si el boton que termina de pulsarse es el izquierdo
 				if (e.key.code == Mouse::Left)
 				{
 					int ok=2;
-					if (numarPiesaMutata == PionALB && move==1)
+					if (numPiezaReclamada == PEON_BLANCO && movimientos==1)
 					{
-						 ok = PionA(oldPoz.x, oldPoz.y, x, y);
+						 ok = movPeonBlanco(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == PionNEGRU && move == 1)
+					if (numPiezaReclamada == PEON_NEGRO && movimientos == 1)
 					{
-						ok = PionN(oldPoz.x, oldPoz.y, x, y);
+						ok = movPeonNegro(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == TurnALB && move == 1)
+					if (numPiezaReclamada == TORRE_BLANCA && movimientos == 1)
 					{
-						ok = TurnA(oldPoz.x, oldPoz.y, x, y);
-						if (ok == 1 && turnAlbStanga==0 && oldPoz.y == 7 && oldPoz.x == 0)
+						ok = movTorreBlanca(prevPos.x, prevPos.y, x, y);
+						if (ok == 1 && torreBlancaIzq==0 && prevPos.y == 7 && prevPos.x == 0)
 						{
-							turnAlbStanga = 1;
+							torreBlancaIzq = 1;
 							//std::cout << turnAlbStanga << "\n";
 						}
-						if (ok == 1 && turnAlbDreapta==0 && oldPoz.y == 7 && oldPoz.x == 7)
+						if (ok == 1 && torreBlancaDer==0 && prevPos.y == 7 && prevPos.x == 7)
 						{
-							turnAlbDreapta = 1;
+							torreBlancaDer = 1;
 							//std::cout << turnAlbDreapta << "\n";
 						}
 					}
-					if (numarPiesaMutata == TurnNEGRU && move == 1)
+					if (numPiezaReclamada == TORRE_NEGRA && movimientos == 1)
 					{
-						ok=TurnN(oldPoz.x, oldPoz.y, x, y);
-						if (ok == 1 && turnNegruDreapta == 0 && oldPoz.y == 0 && oldPoz.x == 7)
+						ok=movTorreNegra(prevPos.x, prevPos.y, x, y);
+						if (ok == 1 && torreNegraDer == 0 && prevPos.y == 0 && prevPos.x == 7)
 						{
-							turnNegruDreapta = 1;
+							torreNegraDer = 1;
 							//std::cout << turnNegruDreapta<< "\n";
 						}
-						if (ok == 1 && turnNegruStanga == 0 && oldPoz.y == 0 && oldPoz.x == 0)
+						if (ok == 1 && torreNegraIzq == 0 && prevPos.y == 0 && prevPos.x == 0)
 						{
-							turnNegruStanga = 1;
+							torreNegraIzq = 1;
 							//std::cout << turnNegruStanga << "\n";
 						}
 					}
-					if (numarPiesaMutata == NebunALB && move == 1)
+					if (numPiezaReclamada == ALFIL_BLANCO && movimientos == 1)
 					{
-						ok = NebunA(oldPoz.x, oldPoz.y, x, y);
+						ok = movAlfilBlanco(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == NebunNEGRU && move == 1)
+					if (numPiezaReclamada == ALFIL_NEGRO && movimientos == 1)
 					{
-						ok= NebunN(oldPoz.x, oldPoz.y, x, y);
+						ok= movAlfilNegro(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == ReginaALB && move == 1)
+					if (numPiezaReclamada == REINA_BLANCA && movimientos == 1)
 					{
-						ok=ReginaA(oldPoz.x, oldPoz.y, x, y);
+						ok=movReinaBlanca(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == ReginaNEGRU && move == 1)
+					if (numPiezaReclamada == REINA_NEGRA && movimientos == 1)
 					{
-						ok=ReginaN(oldPoz.x, oldPoz.y, x, y);
+						ok=movReinaNegra(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == CalALB && move == 1)
+					if (numPiezaReclamada == CABALLO_BLANCO && movimientos == 1)
 					{
-						ok=CalA(oldPoz.x, oldPoz.y, x, y);
+						ok=movCaballoBlanco(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == CalNEGRU && move == 1)
+					if (numPiezaReclamada == CABALLO_NEGRO && movimientos == 1)
 					{
-						ok = CalN(oldPoz.x, oldPoz.y, x, y);
+						ok = movCaballoNegro(prevPos.x, prevPos.y, x, y);
 					}
-					if (numarPiesaMutata == RegeNEGRU && move == 1)
+					if (numPiezaReclamada == REY_NEGRO && movimientos == 1)
 					{
-						ok=RegeN(oldPoz.x, oldPoz.y, x, y);
-						if (ok == 1 && regeNegru == 0)
+						ok=fiReyNegro(prevPos.x, prevPos.y, x, y);
+						if (ok == 1 && reyNegro == 0)
 						{
-							regeNegru = 1;
+							reyNegro = 1;
 						//	std::cout << regeNegru << "\n";
 						}
 					}
-					if (numarPiesaMutata == RegeALB && move == 1)
+					if (numPiezaReclamada == REY_BLANCO && movimientos == 1)
 					{
-						ok=RegeA(oldPoz.x, oldPoz.y, x, y);
-						if (ok == 1 && regeAlb == 0)
+						ok=fiReyBlanco(prevPos.x, prevPos.y, x, y);
+						if (ok == 1 && reyBlanco == 0)
 						{
-							regeAlb = 1;
+							reyBlanco = 1;
 							//std::cout << "primaMutareREGEalb=" << regeAlb << "\n";
 						}
 					}
 					if (ok == 1)
 					{
-						int nr = board[y][x];
-						board[y][x] = numarPiesaMutata;
-						if (y == 0 && numarPiesaMutata == PionALB)
+						int nr = tablero[y][x];
+						tablero[y][x] = numPiezaReclamada;
+						if (y == 0 && numPiezaReclamada == PEON_BLANCO)
 						{
-							transformareAlb = 1;
-							transformA.x = x;
-							transformA.y = y;
-							board[y][x] = 0;
+							iTransformBlanco = 1;
+							transformBlanco.x = x;
+							transformBlanco.y = y;
+							tablero[y][x] = 0;
 						}
-						if (y == 7 && numarPiesaMutata == PionNEGRU)
+						if (y == 7 && numPiezaReclamada == PEON_NEGRO)
 						{
-							transformareNegru = 1;
-							transformN.x = x;
-							transformN.y = y;
-							board[y][x] = 0;
+							iTransformNegro = 1;
+							transformNegro.x = x;
+							transformNegro.y = y;
+							tablero[y][x] = 0;
 						}
-						if(mutare==0) // albul a mutat si urmeaza negrul
+						if(turno==0) // el blanco se ha movido y el negro sigue
 						{
-							if (sahAlb == 1)
+							if (jackeBlanco == 1)
 							{
-								pozRegeAlb();
-								int s = RegeAlbSahCheck(regeleAlb.x, regeleAlb.y);
+								copPosReyBlanco();
+								int s = verifReyBlancoJaque(posReyBlanco.x, posReyBlanco.y);
 								if (s == 0)
 								{
-									board[oldPoz.y][oldPoz.x] = numarPiesaMutata;
-									board[y][x] = nr;
+									tablero[prevPos.y][prevPos.x] = numPiezaReclamada;
+									tablero[y][x] = nr;
 								}
 								else
 								{
-									sahAlb = 0;
-									pozRegeNegru();
-									int sah = RegeNegruSahCheck(regeleNegru.x,regeleNegru.y);
+									jackeBlanco = 0;
+									copReyNegro();
+									int sah = verifReyNegroJaque(posReyNegro.x,posReyNegro.y);
 									if (sah == 0)
 									{
-										sahNegru = 1;
+										jackeNegro = 1;
 									}
-									mutare = 1;
+									turno = 1;
 								}
 							}
 							else
 							{
-								pozRegeAlb();
-								int sa = RegeAlbSahCheck(regeleAlb.x, regeleAlb.y);
+								copPosReyBlanco();
+								int sa = verifReyBlancoJaque(posReyBlanco.x, posReyBlanco.y);
 								if (sa == 0)
 								{
-									board[oldPoz.y][oldPoz.x] = numarPiesaMutata;
-									board[y][x] = nr;
+									tablero[prevPos.y][prevPos.x] = numPiezaReclamada;
+									tablero[y][x] = nr;
 								}
 								else
 								{
-									pozRegeNegru();
-									int sah = RegeNegruSahCheck(regeleNegru.x, regeleNegru.y);
+									copReyNegro();
+									int sah = verifReyNegroJaque(posReyNegro.x, posReyNegro.y);
 									if (sah == 0)
 									{
-										sahNegru = 1;
+										jackeNegro = 1;
 									}
-									mutare = 1;
+									turno = 1;
 								}
 							}
 						}
-						else // negrul a mutat si urmeaza albul
+						else // el negro se ha movido y el blanco sigue
 						{
-							if (sahNegru == 1)
+							if (jackeNegro == 1)
 							{
-								pozRegeNegru();
-								int s = RegeNegruSahCheck(regeleNegru.x,regeleNegru.y);
+								copReyNegro();
+								int s = verifReyNegroJaque(posReyNegro.x,posReyNegro.y);
 								if (s == 0)
 								{
-									board[oldPoz.y][oldPoz.x] = numarPiesaMutata;
-									board[y][x] = nr;
+									tablero[prevPos.y][prevPos.x] = numPiezaReclamada;
+									tablero[y][x] = nr;
 								}
 								else
 								{
-									sahNegru = 0;
-									pozRegeAlb();
-									int sah = RegeAlbSahCheck(regeleAlb.x,regeleAlb.y);
+									jackeNegro = 0;
+									copPosReyBlanco();
+									int sah = verifReyBlancoJaque(posReyBlanco.x,posReyBlanco.y);
 									if (sah == 0)
 									{
-										sahAlb = 1;
+										jackeBlanco = 1;
 									}
-									mutare = 0;
+									turno = 0;
 								}
 							}
 							else
 							{
-								pozRegeNegru();
-								int sa = RegeNegruSahCheck(regeleNegru.x, regeleNegru.y);
+								copReyNegro();
+								int sa = verifReyNegroJaque(posReyNegro.x, posReyNegro.y);
 								if (sa == 0)
 								{
-									board[oldPoz.y][oldPoz.x] = numarPiesaMutata;
-									board[y][x] = nr;
+									tablero[prevPos.y][prevPos.x] = numPiezaReclamada;
+									tablero[y][x] = nr;
 								}
 								else
 								{
-									pozRegeAlb();
-									int sah = RegeAlbSahCheck(regeleAlb.x, regeleAlb.y);
+									copPosReyBlanco();
+									int sah = verifReyBlancoJaque(posReyBlanco.x, posReyBlanco.y);
 									if (sah == 0)
 									{
-										sahAlb = 1;
+										jackeBlanco = 1;
 									}
-									mutare = 0;
+									turno = 0;
 								}
 							}
 						}
 					}
 					else if(ok==0)
 					{
-						board[oldPoz.y][oldPoz.x] = numarPiesaMutata;
+						tablero[prevPos.y][prevPos.x] = numPiezaReclamada;
 					}
-                   move = 0;
+                   movimientos = 0;
 				}
 			}
 		}
-		// afisare //
-		window.clear();
-		window.draw(tabla);
-		if (transformareAlb == 1)
+		// borrar y dibujar //
+		ventana.clear();
+		ventana.draw(sTabla);
+		if (iTransformBlanco == 1)
 		{
-			TransformareALB.setPosition(transformA.x* size, transformA.y* size);
-			window.draw(TransformareALB);
+			sOpcionesDeReclamoBlanco.setPosition(transformBlanco.x* tamanio, transformBlanco.y* tamanio);
+			ventana.draw(sOpcionesDeReclamoBlanco);
 		}
-		if (transformareNegru == 1)
+		if (iTransformNegro == 1)
 		{
-			TransformareNEGRU.setPosition(transformN.x* size, transformN.y* size);
-			window.draw(TransformareNEGRU);
+			sOpcionesDeReclamoNegro.setPosition(transformNegro.x* tamanio, transformNegro.y* tamanio);
+			ventana.draw(sOpcionesDeReclamoNegro);
 		}
-		if (move == 1)
+		if (movimientos == 1)
 		{
-			Mutare.setPosition(pos.x-dx, pos.y-dy);
-			window.draw(Mutare);
+			sReclamo.setPosition(pos.x-dx, pos.y-dy);
+			ventana.draw(sReclamo);
 		}
-		for (int i = 0; i < LUNGIME; i++)
+		for (int i = 0; i < LONGITUD; i++)
 		{
-			for (int j = 0; j < LUNGIME; j++)
+			for (int j = 0; j < LONGITUD; j++)
 			{
 
-				if (board[i][j] != 0)
+				if (tablero[i][j] != 0)
 				{
-					if (board[i][j] == PionNEGRU)
+					if (tablero[i][j] == PEON_NEGRO)
 					{
-						PionNegru.setPosition(j * size, i * size);
-						window.draw(PionNegru);
+						sPeonNegro.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sPeonNegro);
 					}
-					if (board[i][j] == PionALB)
+					if (tablero[i][j] == PEON_BLANCO)
 					{
-						PionAlb.setPosition(j * size, i * size);
-						window.draw(PionAlb);
+						sPeonBlanco.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sPeonBlanco);
 					}
-					if (board[i][j] == TurnNEGRU)
+					if (tablero[i][j] == TORRE_NEGRA)
 					{
-						TurnNegru.setPosition(j * size, i * size);
-						window.draw(TurnNegru);
+						sTorreNegra.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sTorreNegra);
 
 					}
-					if (board[i][j] == TurnALB)
+					if (tablero[i][j] == TORRE_BLANCA)
 					{
-						TurnAlb.setPosition(j * size, i * size);
-						window.draw(TurnAlb);
+						sTorreBlanca.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sTorreBlanca);
 
 					}
-					if (board[i][j] == CalALB)
+					if (tablero[i][j] == CABALLO_BLANCO)
 					{
-						CalAlb.setPosition(j * size, i * size);
-						window.draw(CalAlb);
+						sCaballoBlanco.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sCaballoBlanco);
 					}
-					if (board[i][j] == CalNEGRU)
+					if (tablero[i][j] == CABALLO_NEGRO)
 					{
-						CalNegru.setPosition(j * size, i * size);
-						window.draw(CalNegru);
+						sCaballoNegro.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sCaballoNegro);
 					}
-					if (board[i][j] == NebunNEGRU)
+					if (tablero[i][j] == ALFIL_NEGRO)
 					{
-						NebunNegru.setPosition(j * size, i * size);
-						window.draw(NebunNegru);
+						sAlfilNegro.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sAlfilNegro);
 					}
-					if (board[i][j] == NebunALB)
+					if (tablero[i][j] == ALFIL_BLANCO)
 					{
-						NebunAlb.setPosition(j * size, i * size);
-						window.draw(NebunAlb);
+						sAlfilBlanco.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sAlfilBlanco);
 					}
-					if (board[i][j] == ReginaALB)
+					if (tablero[i][j] == REINA_BLANCA)
 					{
-						ReginaAlb.setPosition(j * size, i * size);
-						window.draw(ReginaAlb);
+						sReinaBlanca.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sReinaBlanca);
 					}
-					if (board[i][j] == ReginaNEGRU)
+					if (tablero[i][j] == REINA_NEGRA)
 					{
-						ReginaNegru.setPosition(j * size, i * size);
-						window.draw(ReginaNegru);
+						sReinaNegra.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sReinaNegra);
 					}
-					if (board[i][j] == RegeNEGRU)
+					if (tablero[i][j] == REY_NEGRO)
 					{
-						RegeNegru.setPosition(j * size, i * size);
-						window.draw(RegeNegru);
+						sReyNegro.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sReyNegro);
 					}
-					if (board[i][j] == RegeALB)
+					if (tablero[i][j] == REY_BLANCO)
 					{
-						RegeAlb.setPosition(j * size, i * size);
-						window.draw(RegeAlb);
+						sReyBlanco.setPosition(j * tamanio, i * tamanio);
+						ventana.draw(sReyBlanco);
 					}
 				}
 			}
 		}
-		window.display();
+		ventana.display(); //mostrar ventana
 	}
 		return 0;
 }//holamnudi
