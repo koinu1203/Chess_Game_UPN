@@ -1,7 +1,23 @@
 #pragma once
+#include <iostream>
 #include "Chess.h"
 #include <stdlib.h>
-
+#define PEON 1
+#define TORRE 2
+#define CABALLO 3
+#define ALFIL 4 
+#define REINA 5
+#define REY 6 
+struct mov {
+	pos movimiento;
+	mov* sgte;
+};
+typedef struct mov* pilaMov;
+struct movpiezas {
+	pos act;
+	pilaMov m; //es un puntero que determinara los movimientos posibles de la pieza, si el puntero esta en null entonces no existen movimientos pasa esa pieza
+	int pieza;
+};
 int tabV[8][8]; //tablero de valor contendra los valores de las fichas en tiempo real
 /*
 	-BLANCO / +NEGRO
@@ -48,7 +64,7 @@ void actTabV() {
 
 	SeudoCodigo: 
 	funcion IA:
-		buscar todos los posibles movimientos 
+		buscar todos los posibles movimientos de todas las posibles fichas
 		generar las tablas de posicion para el caballo, reina y alfil con respecto al rey enemigo y las demas piezas enemigas (aca podemos usar un algoritmo voraz o algun otro)
 		funcion Evaluar movimiento:
 			escoger un movimiento entre los posibles 
@@ -62,4 +78,83 @@ void actTabV() {
 		retornar movimiento escogido
 */
 
+/*
+		agrega un elemento a pila
+		el elemento valor es una posicion posible
+*/
+void addPila(pilaMov &p,pos valor) {
+	
+	pilaMov nuevo = new mov;
+	nuevo->movimiento = valor;
+	nuevo->sgte = p;
+	try
+	{
+		nuevo->sgte = p;
+		p = nuevo;
+	}
+	catch (const std::exception& ex)
+	{
+		std::cout << "Error al grabar en la pila" << std::endl;
+		std::cout << "Valor no grabado: "<<valor.x<<"|"<<valor.y << std::endl;
+		p = NULL;
+		addPila(p, valor);
+	}
+}
+
+/*
+	retorna null si ya no quedan elementos en la pila
+	o si existe un error en la pila
+*/
+pilaMov getPila(pilaMov& p) {
+	try {
+
+	}
+	catch (const std::exception&) {
+		return NULL;
+	}
+}
+void generarListaDeMovimientos(movpiezas lista[],int color) { //color a seleccionar blanco=-1, negro=1
+	int cont = 0;
+	for (int i = 0; i < LONGITUD; i++) {
+		for (int s = 0; s < LONGITUD; s++) {
+			if (tablero[i][s] * color > 0) {
+				lista[cont].act.x = s; //tablero[y][x];
+				lista[cont].act.y = i;
+				switch (abs(tablero[i][s])) {
+					case PEON: {
+
+
+						break;
+					};
+					case TORRE: {
+
+
+						break;
+					};
+					case CABALLO: {
+						
+
+						break;
+					};
+					case ALFIL: {
+
+
+						break;
+					};
+					case REINA: {
+
+
+						break;
+					};
+					case REY: {
+
+
+						break;
+					};
+				}
+				cont++;
+			}
+		}
+	}
+}
 

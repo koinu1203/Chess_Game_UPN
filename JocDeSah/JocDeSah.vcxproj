@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PruebasParaIA.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h" />
