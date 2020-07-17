@@ -536,4 +536,4 @@ int main()
 		ventana.display(); //mostrar ventana
 	}
 		return 0;
-}
+}//holamnudi
