@@ -31,7 +31,7 @@ int tablero[8][8] =
   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
  -1,-1,-1,-1,-1,-1,-1,-1,
- -2,-3,-4,-5,-6,-4,-3,-2, };
+ -2,-3,-4,-5,-6,-4,-3,-2, }; //ez tablero 1=peon, 2=torre, 3=caballo, 4=alfil, 5=reina, 6=rey  tablero[x][y];
 
 //estos valores, sirven para poder validar el enrroque del rey.
 int torreBlancaDer = 0, torreBlancaIzq = 0, reyBlanco = 0;
