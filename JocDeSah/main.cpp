@@ -1,8 +1,8 @@
 #include <iostream>
-#include "IA.h" //libreria donde están todas las funciones 
+#include "Chess.h" //libreria donde están todas las funciones 
 
 //las variables empiezan en 'i' para identificar que es el entero, ya que hay 
-//otra variable con el mismo nombre pero de tipo 'pos'. 
+//otra variable con el mismo nombre pero de tipo 'pos'.
 int iTransformBlanco = 0, iTransformNegro = 0;
 
 int main()
@@ -63,11 +63,9 @@ int main()
 				ventana.close();
 			}
 			ventana.clear();
-			//si el mouse es presionado
 			if (e.type == Event::MouseButtonPressed)
 			{
-				//si el boton izquierdo del mouse es presionado
-				if (e.key.code == Mouse::Left) 
+				if (e.key.code == Mouse::Left) //si el boton izquierdo del mouse es presionado
 				{
 					//std::cout << "x=" << x << " y=" << y << "\n";
 					//std::cout << "pos_x=" << pos.x << " pos_y=" << pos.y << "\n";
@@ -243,10 +241,8 @@ int main()
 					}
 				}
 			}
-			//si el mouse termina de pulsarse
 			if (e.type == Event::MouseButtonReleased)
 			{
-				//si el boton que termina de pulsarse es el izquierdo
 				if (e.key.code == Mouse::Left)
 				{
 					int ok=2;
