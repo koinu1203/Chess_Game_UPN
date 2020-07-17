@@ -102,17 +102,33 @@ void addPila(pilaMov &p,pos valor) {
 }
 
 /*
-	retorna null si ya no quedan elementos en la pila
+	retorna pos x=-1 & y=-1 si ya no quedan elementos en la pila
 	o si existe un error en la pila
 */
-pilaMov getPila(pilaMov& p) {
+pos getPila(pilaMov& p) {
+	pos temp;
+	temp.x = -1;
+	temp.y = -1;
 	try {
-
+		if (p != NULL) {
+			temp = p->movimiento;
+			pilaMov aux = p;
+			p = p->sgte;
+			delete aux;
+		}
+		else {
+			return temp;
+		}
 	}
 	catch (const std::exception&) {
-		return NULL;
+		std::cout << "Error de pila: pila sin un NULL declarado" << std::endl;
+		temp.x = -1;
+		temp.y = -1;
+		return temp;
 	}
 }
+
+
 void generarListaDeMovimientos(movpiezas lista[],int color) { //color a seleccionar blanco=-1, negro=1
 	int cont = 0;
 	for (int i = 0; i < LONGITUD; i++) {
